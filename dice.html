@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サイコロ</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      font-family: sans-serif;
+      background: #f4f4f4;
+    }
+    #dice {
+      width: 160px;
+      height: 160px;
+      box-sizing: border-box;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      place-items: center;
+      background: #fff;
+      border: 4px solid #333;
+      border-radius: 24px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    .pip {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #333;
+      visibility: hidden;
+    }
+    .pip.on {
+      visibility: visible;
+    }
+    /* 1の目は大きく赤く */
+    #dice.one .pip.on {
+      width: 44px;
+      height: 44px;
+      background: #d32f2f;
+    }
+    #dice.roll {
+      animation: roll 0.4s ease-out;
+    }
+    @keyframes roll {
+      0%   { transform: rotate(0deg) scale(0.8); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    button {
+      padding: 12px 40px;
+      font-size: 20px;
+      color: #fff;
+      background: #333;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <div id="dice" aria-label="1"></div>
+  <button id="rollBtn">サイコロを振る</button>
+
+  <script>
+    const dice = document.getElementById('dice');
+    const rollBtn = document.getElementById('rollBtn');
+
+    // 3×3マスのうち、目を表示する位置（0〜8）
+    const FACES = {
+      1: [4],
+      2: [2, 6],
+      3: [2, 4, 6],
+      4: [0, 2, 6, 8],
+      5: [0, 2, 4, 6, 8],
+      6: [0, 2, 3, 5, 6, 8],
+    };
+
+    // 9個の点を用意
+    const pips = [];
+    for (let i = 0; i < 9; i++) {
+      const pip = document.createElement('div');
+      pip.className = 'pip';
+      dice.appendChild(pip);
+      pips.push(pip);
+    }
+
+    function show(n) {
+      pips.forEach((pip, i) => pip.classList.toggle('on', FACES[n].includes(i)));
+      dice.classList.toggle('one', n === 1);
+      dice.setAttribute('aria-label', n);
+    }
+
+    show(1);
+
+    rollBtn.addEventListener('click', () => {
+      const n = Math.floor(Math.random() * 6) + 1;
+      show(n);
+
+      // アニメーションを毎回再生する
+      dice.classList.remove('roll');
+      void dice.offsetWidth;
+      dice.classList.add('roll');
+    });
+  </script>
+</body>
+</html>
